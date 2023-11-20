@@ -1,4 +1,4 @@
-import { searchCities, getWeatherByCity } from './weatherAPI';
+import { searchCities, getWeatherByCity, getForecast } from './weatherAPI';
 
 /**
  * Cria um elemento HTML com as informações passadas
@@ -9,6 +9,7 @@ function createElement(tagName, className, textContent = '') {
   element.textContent = textContent;
   return element;
 }
+
 /**
  * Recebe as informações de uma previsão e retorna um elemento HTML
  */
@@ -72,11 +73,16 @@ export function showForecast(forecastList) {
   forecastContainer.classList.remove('hidden');
 }
 
+async function handleForecast() {
+  const forecastInfo = await getForecast(this.value);
+  showForecast(forecastInfo);
+}
+
 /**
  * Recebe um objeto com as informações de uma cidade e retorna um elemento HTML
  */
 export function createCityElement(cityInfo) {
-  const { name, country, temp, condition, icon /* , url */ } = cityInfo;
+  const { name, country, temp, condition, icon, url } = cityInfo;
 
   const cityElement = createElement('li', 'city');
 
@@ -100,8 +106,13 @@ export function createCityElement(cityInfo) {
   infoContainer.appendChild(tempContainer);
   infoContainer.appendChild(iconElement);
 
+  const forecastBtn = createElement('button', 'city-forecast-button', 'Ver previsão');
+  forecastBtn.value = url;
+  forecastBtn.addEventListener('click', handleForecast);
+
   cityElement.appendChild(headingElement);
   cityElement.appendChild(infoContainer);
+  cityElement.appendChild(forecastBtn);
 
   return cityElement;
 }
